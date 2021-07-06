@@ -1,13 +1,5 @@
-FROM bde2020/hadoop-base:2.0.0-hadoop2.7.4-java8
-
-#国内debian源
-ADD sources.list /etc/apt/
-#添加代理
-ENV http_proxy "http://172.18.8.162:7010"
-ENV https_proxy "http://172.18.8.162:7010"
-
-MAINTAINER Yiannis Mouchakis <gmouchakis@iit.demokritos.gr>
-MAINTAINER Ivan Ermilov <ivan.s.ermilov@gmail.com>
+FROM harbor.software.dc/mpdata/hadoop-base:2.0.0-hadoop2.7.4-java8
+LABEL  maintainer="凌久高科软件开发中心 <rjkfzx@linjo.cn>"
 
 # Allow buildtime config of HIVE_VERSION
 ARG HIVE_VERSION
@@ -24,13 +16,13 @@ WORKDIR /opt
 
 #Install Hive and PostgreSQL JDBC
 COPY apache-hive-$HIVE_VERSION-bin.tar.gz ./
-RUN apt-get update && apt-get install -y wget procps && \
+RUN apt-get update && apt-get install -y wget procps vim && \
 	#wget https://archive.apache.org/dist/hive/hive-$HIVE_VERSION/apache-hive-$HIVE_VERSION-bin.tar.gz && \
 	tar -xzvf apache-hive-$HIVE_VERSION-bin.tar.gz && \
 	mv apache-hive-$HIVE_VERSION-bin hive && \
 	#wget https://jdbc.postgresql.org/download/postgresql-9.4.1212.jar -O $HIVE_HOME/lib/postgresql-jdbc.jar && \
 	rm apache-hive-$HIVE_VERSION-bin.tar.gz && \
-	apt-get --purge remove -y wget && \
+	#apt-get --purge remove -y wget && \
 	apt-get clean && \
 	rm -rf /var/lib/apt/lists/*
 
@@ -50,6 +42,12 @@ ADD conf/hive-log4j2.properties $HIVE_HOME/conf
 ADD conf/ivysettings.xml $HIVE_HOME/conf
 ADD conf/llap-daemon-log4j2.properties $HIVE_HOME/conf
 
+# 添加hive元数据hook插件 apache-atlas-2.1.0-hive-hook
+RUN mkdir /opt/atlas
+ADD apache-atlas-2.1.0-hive-hook.tar.gz /opt/atlas
+# 替换hadoop-common的加载的configuration包org.apache.hadoop.conf.Configuration
+RUN rm -rf /opt/hive/lib/commons-configuration-1.6.jar
+RUN cp /opt/atlas/apache-atlas-hive-hook-2.1.0/hook/hive/atlas-hive-plugin-impl/commons-configuration-1.10.jar /opt/hive/lib/
 
 COPY startup.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/startup.sh
