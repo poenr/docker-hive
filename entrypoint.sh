@@ -112,8 +112,8 @@ function wait_for_it()
 
 
 #根据环境变量选择是否启动Atlas插件
-if [ -n "$ATLAS_HOOK" ]&&[ "$ATLAS_HOOK" = "true" ]; then
- echo " - add atlas hook -"
+if [ -n "$ATLAS_HOOK" ]&&[ "$ATLAS_HOOK" = "true" ]&&[ `grep -c "HiveHook" /opt/hive/conf/hive-site.xml` -eq '0' ] ; then
+echo " - add atlas hook -"
 addProperty /opt/hive/conf/hive-site.xml hive.exec.post.hooks org.apache.atlas.hive.hook.HiveHook
 echo "export HIVE_AUX_JARS_PATH=/opt/atlas/apache-atlas-hive-hook-2.1.0/hook/hive">>/opt/hive/conf/hive-env.sh
 fi

@@ -7,6 +7,7 @@ services:
       - namenode:/hadoop/dfs/name
     environment:
       - CLUSTER_NAME=test
+    hostname: namenode
     env_file:
       - ./hadoop-hive.env
     ports:
@@ -20,6 +21,7 @@ services:
       - ./hadoop-hive.env
     environment:
       SERVICE_PRECONDITION: "namenode:50070"
+    hostname: datanode
     ports:
       - "50010:50010"
       - "50020:50020"
@@ -68,6 +70,8 @@ services:
       HIVE_CORE_CONF_javax_jdo_option_ConnectionURL: "jdbc:postgresql://hive-metastore/metastore"
       SERVICE_PRECONDITION: "hive-metastore:9083"
       ATLAS_HOOK: "false" 
+    volumes:
+      - ./conf/atlas-application.properties:/opt/hive/conf/atlas-application.properties
     ports:
       - "10000:10000"
   hive-metastore:
