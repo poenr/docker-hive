@@ -39,6 +39,10 @@ configure /etc/hadoop/kms-site.xml kms KMS_CONF
 configure /etc/hadoop/mapred-site.xml mapred MAPRED_CONF
 configure /opt/hive/conf/hive-site.xml hive HIVE_SITE_CONF
 
+
+sed -i "s#0.0.0.0:8188#historyserver:8188#g" /etc/hadoop/mapred-site.xml
+sed -i "s#0.0.0.0:10020#historyserver:10020#g" /etc/hadoop/mapred-site.xml
+
 if [ "$MULTIHOMED_NETWORK" = "1" ]; then
     echo "Configuring for multihomed network"
 
@@ -118,6 +122,9 @@ addProperty /opt/hive/conf/hive-site.xml hive.exec.post.hooks org.apache.atlas.h
 echo "export HIVE_AUX_JARS_PATH=/opt/atlas/apache-atlas-hive-hook-2.1.0/hook/hive">>/opt/hive/conf/hive-env.sh
 fi
 
+#任务正使用的物理内存量/虚拟内存量检查设置
+addProperty /etc/hadoop/yarn-site.xml yarn.nodemanager.vmem-check-enabled false
+addProperty /etc/hadoop/yarn-site.xml yarn.nodemanager.pmem-check-enabled false
 
 
 for i in ${SERVICE_PRECONDITION[@]}

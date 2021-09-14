@@ -33,6 +33,7 @@ services:
       SERVICE_PRECONDITION: "namenode:50070 datanode:50075"
     env_file:
       - ./hadoop-hive.env
+    hostname: resourcemanager
     ports:
       - "8030:8030"
       - "8031:8031"
@@ -58,6 +59,7 @@ services:
       - hadoop_historyserver:/hadoop/yarn/timeline
     env_file:
       - ./hadoop-hive.env
+    hostname: historyserver
     ports:
       - "8188:8188"
       - "10020:10020"
