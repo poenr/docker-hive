@@ -84,7 +84,7 @@ services:
     env_file:
       - ./hadoop-hive.env
     environment:
-      HIVE_CORE_CONF_javax_jdo_option_ConnectionURL: "jdbc:mysql://hive-metastore-mysql:3306/hive?createDatabaseIfNotExist=true&amp;useSSL=false"
+      HIVE_CORE_CONF_javax_jdo_option_ConnectionURL: "jdbc:mysql://hive-metastore-mysql:3306/hive?useSSL=false"
       HIVE_SITE_CONF_javax_jdo_option_ConnectionDriverName: "com.mysql.jdbc.Driver"
       HIVE_SITE_CONF_javax_jdo_option_ConnectionUserName: "root"
       HIVE_SITE_CONF_javax_jdo_option_ConnectionPassword: "123456"
@@ -100,7 +100,7 @@ services:
   hive-metastore-mysql:
     image: harbor.software.dc/mysql/mysql:5.7
     restart: always
-    container_name:hive-metastore-mysql
+    container_name: hive-metastore-mysql
     volumes:
       - ./conf/mysql/my.cnf:/etc/mysql/my.cnf:ro
       - ./data/mysql/data:/var/lib/mysql/
