@@ -72,8 +72,8 @@ services:
     hostname: historyserver
     ports:
       - "8188:8188"
-      - "8189:8189"
       - "10020:10020"
+      - "19888:19888"
     depends_on:
       - "namenode"
       - "datanode"
