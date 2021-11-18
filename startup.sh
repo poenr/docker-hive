@@ -70,6 +70,9 @@ hdfs dfs -chmod -R 777 /tmp
 
 #hdfs dfs -chown -R hadoop:hadoop /
 
+#initiate hive metedata server
+$HIVE_HOME/bin/schematool -dbType mysql -initSchema
+echo "schematool -dbType mysql -initSchema ok"
 
 ./hiveserver2 --hiveconf hive.server2.enable.doAs=false &
 echo "hiveserver2 --hiveconf hive.server2.enable.doAs=false ok"

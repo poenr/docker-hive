@@ -14,14 +14,14 @@ ENV HADOOP_HOME /opt/hadoop-$HADOOP_VERSION
 
 WORKDIR /opt
 
-#Install Hive and PostgreSQL JDBC
+#Install Hive and Mysql JDBC
 COPY apache-hive-$HIVE_VERSION-bin.tar.gz ./
 RUN tar -xzvf apache-hive-$HIVE_VERSION-bin.tar.gz && \
 	mv apache-hive-$HIVE_VERSION-bin hive && \
 	rm apache-hive-$HIVE_VERSION-bin.tar.gz && \
 	rm -rf /var/lib/apt/lists/*
 
-COPY lib/postgresql-9.4.1212.jar $HIVE_HOME/lib/postgresql-jdbc.jar
+COPY lib/mysql-connector-java-5.1.49.jar $HIVE_HOME/lib/mysql-connector-java-5.1.49.jar
 
 RUN ls -l /opt/hive/
 

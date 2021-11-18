@@ -80,12 +80,14 @@ services:
       - "resourcemanager"
 
   hive-server:
-    image: harbor.software.dc/mpdata/hive:1.2.1-postgresql-metastore
+    image: harbor.software.dc/mpdata/hive:1.2.1-mysql-metastore
     env_file:
       - ./hadoop-hive.env
     environment:
-      HIVE_CORE_CONF_javax_jdo_option_ConnectionURL: "jdbc:postgresql://hive-metastore/metastore"
-      SERVICE_PRECONDITION: "hive-metastore:9083"
+      HIVE_CORE_CONF_javax_jdo_option_ConnectionURL: "jdbc:mysql://hive-metastore-mysql:3306/hive?createDatabaseIfNotExist=true&amp;useSSL=false"
+      HIVE_SITE_CONF_javax_jdo_option_ConnectionDriverName: "com.mysql.jdbc.Driver"
+      HIVE_SITE_CONF_javax_jdo_option_ConnectionUserName: "root"
+      HIVE_SITE_CONF_javax_jdo_option_ConnectionPassword: "123456"
       ATLAS_HOOK: "false" 
     hostname: hive-server
     volumes:
@@ -94,25 +96,20 @@ services:
       - "10000:10000"
       - "10002:10002"
     depends_on:
-      - "hive-metastore"
-  hive-metastore:
-    image: harbor.software.dc/mpdata/hive:1.2.1-postgresql-metastore
-    env_file:
-      - ./hadoop-hive.env
-    command: /opt/hive/bin/hive --service metastore
+      - "hive-metastore-mysql"
+  hive-metastore-mysql:
+    image: harbor.software.dc/mysql/mysql:5.7
+    restart: always
+    container_name:hive-metastore-mysql
+    volumes:
+      - ./conf/mysql/my.cnf:/etc/mysql/my.cnf:ro
+      - ./data/mysql/data:/var/lib/mysql/
+      - ./data/mysql/init-sql:/docker-entrypoint-initdb.d
+    ports:
+      - "13306:3306"
     environment:
-      SERVICE_PRECONDITION: "namenode:50070 datanode:50075 hive-metastore-postgresql:5432"
-    ports:
-      - "9083:9083"
-    depends_on:
-      - "namenode"
-      - "datanode"
-      - "hive-metastore-postgresql"
-
-  hive-metastore-postgresql:
-    image: harbor.software.dc/mpdata/hive-metastore-postgresql:1.2.0
-    ports:
-      - "5432:5432"
+      - MYSQL_ROOT_PASSWORD=123456
+      - TZ=Asia/Shanghai
   presto-coordinator:
     image: harbor.software.dc/mpdata/prestodb:0.183
     ports:
