@@ -26,6 +26,8 @@ services:
       - "50010:50010"
       - "50020:50020"
       - "50075:50075"
+    depends_on:
+      - "namenode"
   resourcemanager:
     image: harbor.software.dc/mpdata/hadoop-resourcemanager:2.0.0-hadoop2.7.4-java8
     container_name: resourcemanager
@@ -39,17 +41,25 @@ services:
       - "8031:8031"
       - "8032:8032"
       - "8088:8088"
-
-  nodemanager1:
+    depends_on:
+      - "namenode"
+      - "datanode"
+  nodemanager:
     image: harbor.software.dc/mpdata/hadoop-nodemanager:2.0.0-hadoop2.7.4-java8
     container_name: nodemanager
     environment:
       SERVICE_PRECONDITION: "namenode:50070 datanode:50075 resourcemanager:8088"
+    hostname: nodemanager
     env_file:
       - ./hadoop-hive.env
     ports:
+      - "8040:8040"
+      - "8041:8041"
       - "8042:8042"
-  
+    depends_on:
+      - "namenode"
+      - "datanode"
+      - "resourcemanager"
   historyserver:
     image: harbor.software.dc/mpdata/hadoop-historyserver:2.0.0-hadoop2.7.4-java8
     container_name: historyserver
@@ -62,7 +72,12 @@ services:
     hostname: historyserver
     ports:
       - "8188:8188"
+      - "8189:8189"
       - "10020:10020"
+    depends_on:
+      - "namenode"
+      - "datanode"
+      - "resourcemanager"
 
   hive-server:
     image: harbor.software.dc/mpdata/hive:1.2.1-postgresql-metastore
@@ -72,10 +87,14 @@ services:
       HIVE_CORE_CONF_javax_jdo_option_ConnectionURL: "jdbc:postgresql://hive-metastore/metastore"
       SERVICE_PRECONDITION: "hive-metastore:9083"
       ATLAS_HOOK: "false" 
+    hostname: hive-server
     volumes:
       - ./conf/atlas-application.properties:/opt/hive/conf/atlas-application.properties
     ports:
       - "10000:10000"
+      - "10002:10002"
+    depends_on:
+      - "hive-metastore"
   hive-metastore:
     image: harbor.software.dc/mpdata/hive:1.2.1-postgresql-metastore
     env_file:
@@ -85,6 +104,11 @@ services:
       SERVICE_PRECONDITION: "namenode:50070 datanode:50075 hive-metastore-postgresql:5432"
     ports:
       - "9083:9083"
+    depends_on:
+      - "namenode"
+      - "datanode"
+      - "hive-metastore-postgresql"
+
   hive-metastore-postgresql:
     image: harbor.software.dc/mpdata/hive-metastore-postgresql:1.2.0
     ports:
@@ -93,6 +117,8 @@ services:
     image: harbor.software.dc/mpdata/prestodb:0.183
     ports:
       - "8080:8080"
+    depends_on:
+      - "hive-server"   
 
 volumes:
   namenode:

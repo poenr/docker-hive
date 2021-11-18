@@ -16,17 +16,12 @@ WORKDIR /opt
 
 #Install Hive and PostgreSQL JDBC
 COPY apache-hive-$HIVE_VERSION-bin.tar.gz ./
-RUN apt-get update && apt-get install -y wget procps vim && \
-	#wget https://archive.apache.org/dist/hive/hive-$HIVE_VERSION/apache-hive-$HIVE_VERSION-bin.tar.gz && \
-	tar -xzvf apache-hive-$HIVE_VERSION-bin.tar.gz && \
+RUN tar -xzvf apache-hive-$HIVE_VERSION-bin.tar.gz && \
 	mv apache-hive-$HIVE_VERSION-bin hive && \
-	#wget https://jdbc.postgresql.org/download/postgresql-9.4.1212.jar -O $HIVE_HOME/lib/postgresql-jdbc.jar && \
 	rm apache-hive-$HIVE_VERSION-bin.tar.gz && \
-	#apt-get --purge remove -y wget && \
-	apt-get clean && \
 	rm -rf /var/lib/apt/lists/*
 
-COPY postgresql-9.4.1212.jar $HIVE_HOME/lib/postgresql-jdbc.jar
+COPY lib/postgresql-9.4.1212.jar $HIVE_HOME/lib/postgresql-jdbc.jar
 
 RUN ls -l /opt/hive/
 
@@ -44,7 +39,7 @@ ADD conf/llap-daemon-log4j2.properties $HIVE_HOME/conf
 
 # 添加hive元数据hook插件 apache-atlas-2.1.0-hive-hook
 RUN mkdir /opt/atlas
-ADD apache-atlas-2.1.0-hive-hook.tar.gz /opt/atlas
+ADD hook/apache-atlas-2.1.0-hive-hook.tar.gz /opt/atlas
 # 替换hadoop-common的加载的configuration包org.apache.hadoop.conf.Configuration
 RUN rm -rf /opt/hive/lib/commons-configuration-1.6.jar
 RUN cp /opt/atlas/apache-atlas-hive-hook-2.1.0/hook/hive/atlas-hive-plugin-impl/commons-configuration-1.10.jar /opt/hive/lib/

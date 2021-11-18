@@ -27,7 +27,13 @@ function configure() {
         var="${envPrefix}_${c}"
         value=${!var}
         echo " - Setting $name=$value"
-        addProperty $path $name "$value"
+        
+        grep "<name>$name</name>" $path >/dev/null
+        if [ $? -eq 0 ]; then
+        　sed -ri '/'"<name>\s*${name}\s*<\/name>"'/{N;s/'"(<name>\s*${name}\s*<\/name>\n*\s*<value>).*?(<\/value>)"'/\1'"${value}"'\2/g}' $path
+        else
+          addProperty $path $name "$value"
+        fi
     done
 }
 
@@ -56,7 +62,6 @@ if [ "$MULTIHOMED_NETWORK" = "1" ]; then
 
     # YARN
     addProperty /etc/hadoop/yarn-site.xml yarn.resourcemanager.bind-host 0.0.0.0
-    addProperty /etc/hadoop/yarn-site.xml yarn.nodemanager.bind-host 0.0.0.0
     addProperty /etc/hadoop/yarn-site.xml yarn.nodemanager.bind-host 0.0.0.0
     addProperty /etc/hadoop/yarn-site.xml yarn.timeline-service.bind-host 0.0.0.0
 
@@ -121,11 +126,6 @@ echo " - add atlas hook -"
 addProperty /opt/hive/conf/hive-site.xml hive.exec.post.hooks org.apache.atlas.hive.hook.HiveHook
 echo "export HIVE_AUX_JARS_PATH=/opt/atlas/apache-atlas-hive-hook-2.1.0/hook/hive">>/opt/hive/conf/hive-env.sh
 fi
-
-#任务正使用的物理内存量/虚拟内存量检查设置
-addProperty /etc/hadoop/yarn-site.xml yarn.nodemanager.vmem-check-enabled false
-addProperty /etc/hadoop/yarn-site.xml yarn.nodemanager.pmem-check-enabled false
-
 
 for i in ${SERVICE_PRECONDITION[@]}
 do
