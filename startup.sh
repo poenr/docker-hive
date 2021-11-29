@@ -66,9 +66,8 @@ hdfs dfs -chmod -R g+w /user/hive/log >/dev/null 2>&1
 hdfs dfs -chmod -R g+w /rmstate >/dev/null 2>&1
 hdfs dfs -chmod -R g+w /app-logs >/dev/null 2>&1
 
-hdfs dfs -chmod -R 777 /tmp
-
-#hdfs dfs -chown -R hadoop:hadoop /
+hdfs dfs -chmod -R 1777 /tmp
+hdfs dfs -chmod -R 1777 /app-logs
 
 #initiate hive metedata server
 $HIVE_HOME/bin/schematool -dbType mysql -initSchema

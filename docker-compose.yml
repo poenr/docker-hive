@@ -56,6 +56,7 @@ services:
       - "8040:8040"
       - "8041:8041"
       - "8042:8042"
+      - "50031-50040:50031-50040"
     depends_on:
       - "namenode"
       - "datanode"
@@ -72,6 +73,7 @@ services:
     hostname: historyserver
     ports:
       - "8188:8188"
+      - "10200:10200"
       - "10020:10020"
       - "19888:19888"
     depends_on:
@@ -96,6 +98,19 @@ services:
       - "10000:10000"
       - "10002:10002"
     depends_on:
+      - "hive-metastore-mysql"
+  hive-metastore:
+    image: harbor.software.dc/mpdata/hive:1.2.1-mysql-metastore
+    env_file:
+      - ./hadoop-hive.env
+    command: /opt/hive/bin/hive --service metastore
+    environment:
+      SERVICE_PRECONDITION: "namenode:50070 datanode:50075 hive-metastore-mysql:3306"
+    ports:
+      - "9083:9083"
+    depends_on:
+      - "namenode"
+      - "datanode"
       - "hive-metastore-mysql"
   hive-metastore-mysql:
     image: harbor.software.dc/mysql/mysql:5.7
@@ -124,3 +139,4 @@ volumes:
   namenode:
   datanode:
   hadoop_historyserver:
+

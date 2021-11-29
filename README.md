@@ -41,10 +41,12 @@ docker-compose exec hive-server /bin/bash -c 'hive -S -e "select * from default.
 | resourcemanager |yarn.resourcemanager.webapp.address           |  8088   |8088
 | historyserver   |mapreduce.jobhistory.webapp.address   |  19888   |19888
 | historyserver   |mapreduce.jobhistory.address          |  10020  |10020
-| historyserver   |yarn.timeline-service.webapp.address  |  8188   |8188
+| historyserver   |yarn.timeline-service.webapp.address  |  8188   |8188 | timelineseerver端口和historyserver共用容器
+| historyserver   |yarn.timeline-service.address  |  10200   |10200 | timelineseerver端口和historyserver共用容器
 | hive-server   |hive.server2.thrift.port  |  10000   |10000
 | hive-server   |hive.server2.webui.port  |  10002   |10002 | hive2.0以上版本支持web UI
 | hive-metastore-mysql  |mysql  |  3306   |13306 | 数据库端口
+| hive-metastore |metastore  |  9083   |9083 | 元数据服务端口
 
 
 
