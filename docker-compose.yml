@@ -127,14 +127,15 @@ services:
       - MYSQL_ROOT_PASSWORD=123456
       - TZ=Asia/Shanghai
     hostname: hive-metastore-mysql
-  presto-coordinator:
-    image: harbor.software.dc/mpdata/prestodb:0.183
-    ports:
-      - "8080:8080"
-    environment:
-      - TZ=Asia/Shanghai
-    depends_on:
-      - "hive-server"   
+#  默认禁用presto容器
+#  presto-coordinator:
+#    image: harbor.software.dc/mpdata/prestodb:0.183
+#    ports:
+#      - "8080:8080"
+#    environment:
+#      - TZ=Asia/Shanghai
+#    depends_on:
+#      - "hive-server"   
 
 volumes:
   namenode:
