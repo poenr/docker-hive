@@ -1,8 +1,8 @@
 # hive容器镜像,本分支为元数据使用mysql的版本
 
-* 本项目涉及到1个镜像的制作，使用hive1.2.1版本
+* 本项目涉及到1个镜像的制作，使用hive2.3.9版本
 ```
-hive-server和hive-metastore服务共同使用的hive:1.2.1-mysql-metastore镜像
+hive-server和hive-metastore服务共同使用的hive:2.3.9-mysql-metastore镜像
 ```
 * 本项目可直接快速启动一个包含hadoop及hive的容器环境,具体参考```docker-compose.yml```
 ```
@@ -11,7 +11,7 @@ hive-server和hive-metastore服务共同使用的hive:1.2.1-mysql-metastore镜�
 #启动脚本
 git clone http://gitlab.software.dc/mp-data/dss/docker-hive.git
 cd docker-hive
-git checkout 1.2.1-mysql-metastore
+git checkout 2.3.9-mysql-metastore
 docker-compose up -d
 docker-compose logs -f hive-server
 
@@ -50,16 +50,16 @@ docker-compose exec hive-server /bin/bash -c 'hive -S -e "select * from default.
 
 
 
-## hive:1.2.1-mysql-metastore镜像
-此镜像Dockerfile中包括hive1.2.1版本的安装、hive启动脚本及atlas hive hook插件的安装，其中atlas插件根据环境变量参数选择是否启用，具体参考```entrypoint.sh```
+## hive:2.3.9-mysql-metastore镜像
+此镜像Dockerfile中包括hive2.3.9版本的安装、hive启动脚本及atlas hive hook插件的安装，其中atlas插件根据环境变量参数选择是否启用，具体参考```entrypoint.sh```
 
 * 镜像制作脚本
 ```
 git clone http://gitlab.software.dc/mp-data/dss/docker-hive.git
 cd docker-hive
-git checkout 1.2.1-mysql-metastore
-docker build -t  harbor.software.dc/mpdata/hive:1.2.1-mysql-metastore -f Dockerfile ./
-docker push harbor.software.dc/mpdata/hive:1.2.1-mysql-metastore
+git checkout 2.3.9-mysql-metastore
+docker build -t  harbor.software.dc/mpdata/hive:2.3.9-mysql-metastore -f Dockerfile ./
+docker push harbor.software.dc/mpdata/hive:2.3.9-mysql-metastore
 ```
 
 * 添加hive集成Atlas插件/对Dockerfile进行优化,根据环境变量选择是否启动Atlas插件

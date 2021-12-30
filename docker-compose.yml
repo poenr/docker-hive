@@ -82,7 +82,7 @@ services:
       - "resourcemanager"
 
   hive-server:
-    image: harbor.software.dc/mpdata/hive:1.2.1-mysql-metastore
+    image: harbor.software.dc/mpdata/hive:2.3.9-mysql-metastore
     env_file:
       - ./hadoop-hive.env
     environment:
@@ -100,7 +100,7 @@ services:
     depends_on:
       - "hive-metastore-mysql"
   hive-metastore:
-    image: harbor.software.dc/mpdata/hive:1.2.1-mysql-metastore
+    image: harbor.software.dc/mpdata/hive:2.3.9-mysql-metastore
     env_file:
       - ./hadoop-hive.env
     command: /opt/hive/bin/hive --service metastore
@@ -112,6 +112,7 @@ services:
       - "namenode"
       - "datanode"
       - "hive-metastore-mysql"
+      - "hive-server"
   hive-metastore-mysql:
     image: harbor.software.dc/mysql/mysql:5.7
     restart: always
@@ -121,7 +122,7 @@ services:
       - ./data/mysql/data:/var/lib/mysql/
       - ./data/mysql/init-sql:/docker-entrypoint-initdb.d
     ports:
-      - "13306:3306"
+      - "53306:3306"
     environment:
       - MYSQL_ROOT_PASSWORD=123456
       - TZ=Asia/Shanghai

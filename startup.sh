@@ -68,17 +68,19 @@ hdfs dfs -chmod -R g+w /app-logs >/dev/null 2>&1
 
 hdfs dfs -chmod -R 1777 /tmp
 hdfs dfs -chmod -R 1777 /app-logs
+hdfs dfs -chmod -R 1777 /user/hive/
 
 #initiate hive metedata server
 $HIVE_HOME/bin/schematool -dbType mysql -initSchema
 echo "schematool -dbType mysql -initSchema ok"
 
-./hiveserver2 --hiveconf hive.server2.enable.doAs=false &
+./hive --hiveconf hive.server2.enable.doAs=false --service hiveserver2 &
 echo "hiveserver2 --hiveconf hive.server2.enable.doAs=false ok"
 
+./hive -S -e "set role admin;"
 ./hive -S -e "CREATE DATABASE  if not exists ljgk_dw;"
-./hive -S -e "GRANT ALL ON DATABASE default TO user hadoop;"
-./hive -S -e "GRANT ALL ON DATABASE ljgk_dw TO user hadoop;"
+./hive -S -e "set role admin;GRANT ALL ON DATABASE default TO user hadoop;"
+./hive -S -e "set role admin;GRANT ALL ON DATABASE ljgk_dw TO user hadoop;"
 ./hive -S -e "CREATE TABLE  if not exists pokes (foo INT, bar STRING);"
 ./hive -S -e "LOAD DATA LOCAL INPATH '/opt/hive/examples/files/kv1.txt' OVERWRITE INTO TABLE pokes;"
 

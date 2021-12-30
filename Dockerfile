@@ -6,7 +6,7 @@ ARG HIVE_VERSION
 # Set HIVE_VERSION from arg if provided at build, env if provided at run, or default
 # https://docs.docker.com/engine/reference/builder/#using-arg-variables
 # https://docs.docker.com/engine/reference/builder/#environment-replacement
-ENV HIVE_VERSION=${HIVE_VERSION:-1.2.1}
+ENV HIVE_VERSION=${HIVE_VERSION:-2.3.9}
 
 ENV HIVE_HOME /opt/hive
 ENV PATH $HIVE_HOME/bin:$PATH
@@ -15,7 +15,11 @@ ENV HADOOP_HOME /opt/hadoop-$HADOOP_VERSION
 WORKDIR /opt
 
 #Install Hive and Mysql JDBC
-COPY apache-hive-$HIVE_VERSION-bin.tar.gz ./
+
+#COPY apache-hive-$HIVE_VERSION-bin.tar.gz ./
+
+RUN wget -c http://dl.software.dc/dist/apache-hive-2.3.9-bin.tar.gz -o /opt/apache-hive-2.3.9-bin.tar.gz
+
 RUN tar -xzvf apache-hive-$HIVE_VERSION-bin.tar.gz && \
 	mv apache-hive-$HIVE_VERSION-bin hive && \
 	rm apache-hive-$HIVE_VERSION-bin.tar.gz && \
