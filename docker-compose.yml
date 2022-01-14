@@ -99,6 +99,7 @@ services:
       - "10002:10002"
     depends_on:
       - "hive-metastore-mysql"
+      - "hive-metastore"
   hive-metastore:
     image: harbor.software.dc/mpdata/hive:2.3.9-mysql-metastore
     env_file:
@@ -112,7 +113,6 @@ services:
       - "namenode"
       - "datanode"
       - "hive-metastore-mysql"
-      - "hive-server"
   hive-metastore-mysql:
     image: harbor.software.dc/mysql/mysql:5.7
     restart: always
