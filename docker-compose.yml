@@ -61,6 +61,8 @@ services:
       - "namenode"
       - "datanode"
       - "resourcemanager"
+    extra_hosts:
+      pushgateway: 172.18.8.174
   historyserver:
     image: harbor.software.dc/mpdata/hadoop-historyserver:2.0.0-hadoop2.7.4-java8
     container_name: historyserver
@@ -99,7 +101,6 @@ services:
       - "10002:10002"
     depends_on:
       - "hive-metastore-mysql"
-      - "hive-metastore"
   hive-metastore:
     image: harbor.software.dc/mpdata/hive:2.3.9-mysql-metastore
     env_file:
@@ -113,6 +114,7 @@ services:
       - "namenode"
       - "datanode"
       - "hive-metastore-mysql"
+      - "hive-server"
   hive-metastore-mysql:
     image: harbor.software.dc/mysql/mysql:5.7
     restart: always
@@ -127,6 +129,10 @@ services:
       - MYSQL_ROOT_PASSWORD=123456
       - TZ=Asia/Shanghai
     hostname: hive-metastore-mysql
+    healthcheck:
+      test: ["CMD", "mysql", "--user=root", "--password=123456", "-e", "'SHOW DATABASES;'"]
+      timeout: 5s
+      retries: 5
 #  默认禁用presto容器
 #  presto-coordinator:
 #    image: harbor.software.dc/mpdata/prestodb:0.183

@@ -87,7 +87,7 @@ docker-compose exec hive-server /bin/bash -c 'hive -S -e "create table ljgk_dw.d
 * 本项目docker-compose.yml还包含其他镜像
 1. hive-metastore-mysql服务使用的mysql:5.7镜像
 2. Hadoop组件相关的镜像
-## hmysql:5.7
+## mysql:5.7
 此镜像为hive使用的元数据库，使用mysql数据库5.7版本
 ```
 docker pull mysql:5.7
@@ -95,12 +95,39 @@ docker tag mysql:5.7 harbor.software.dc/mysql/mysql:5.7
 ```
 ## Hadoop组件相关的镜像
 ```
-具体镜像制作方法详见http://gitlab.software.dc/mp-data/dss/docker-hadoop/-/tree/2.0.0-hadoop2.7.4-java8
+#其中hadoop-base基础镜像需要替换部分文件，其他镜像在基础镜像基础上重新编译
+# hadoop配置下的mapred-site.xml和yarn-env.sh
+# hive配置下的hive-site.xml
+vim ./base/DockerFile
+
+docker build -t harbor.software.dc/mpdata/hadoop-base:2.0.0-hadoop2.7.4-java8 ./base
+
+docker build -t harbor.software.dc/mpdata/hadoop-namenode:2.0.0-hadoop2.7.4-java8 ./namenode
+docker build -t harbor.software.dc/mpdata/hadoop-datanode:2.0.0-hadoop2.7.4-java8 ./datanode
+docker build -t harbor.software.dc/mpdata/hadoop-resourcemanager:2.0.0-hadoop2.7.4-java8 ./resourcemanager
+docker build -t harbor.software.dc/mpdata/hadoop-nodemanager:2.0.0-hadoop2.7.4-java8 ./nodemanager
+docker build -t harbor.software.dc/mpdata/hadoop-historyserver:2.0.0-hadoop2.7.4-java8 ./historyserver
+docker build -t harbor.software.dc/mpdata/hadoop-submit:2.0.0-hadoop2.7.4-java8 ./submit
+
+#镜像上传到harbor
+
+docker push harbor.software.dc/mpdata/hadoop-namenode:2.0.0-hadoop2.7.4-java8
+docker push harbor.software.dc/mpdata/hadoop-datanode:2.0.0-hadoop2.7.4-java8
+docker push harbor.software.dc/mpdata/hadoop-resourcemanager:2.0.0-hadoop2.7.4-java8
+docker push harbor.software.dc/mpdata/hadoop-nodemanager:2.0.0-hadoop2.7.4-java8
+docker push harbor.software.dc/mpdata/hadoop-historyserver:2.0.0-hadoop2.7.4-java8
+docker push harbor.software.dc/mpdata/hadoop-submit:2.0.0-hadoop2.7.4-java8
+
+```
+
+hadoop容器镜像制作,请使用分支2.0.0-hadoop2.7.4-java8
+
+```
+具体镜像制作方法详见http://gitlab.software.dc/mp-data/dss/docker-hadoop/-/tree/2.0.0-hadoop2.7.4-java8，！！！此工程已不在维护！！！
 ```
 [![Gitter chat](https://badges.gitter.im/gitterHQ/gitter.png)](https://gitter.im/big-data-europe/Lobby)
 
 # docker-hive
-
 
 ## Testing
 Load data into Hive:

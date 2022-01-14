@@ -18,7 +18,7 @@ WORKDIR /opt
 
 #COPY apache-hive-$HIVE_VERSION-bin.tar.gz ./
 
-RUN wget -c http://dl.software.dc/dist/apache-hive-2.3.9-bin.tar.gz -o /opt/apache-hive-2.3.9-bin.tar.gz
+RUN wget -c http://dl.software.dc/dist/apache-hive-2.3.9-bin.tar.gz -O /opt/apache-hive-2.3.9-bin.tar.gz
 
 RUN tar -xzvf apache-hive-$HIVE_VERSION-bin.tar.gz && \
 	mv apache-hive-$HIVE_VERSION-bin hive && \
@@ -56,6 +56,8 @@ RUN chmod +x /usr/local/bin/entrypoint.sh
 
 EXPOSE 10000
 EXPOSE 10002
+
+HEALTHCHECK CMD curl -f http://localhost:10002/ || exit 1
 
 ENTRYPOINT ["entrypoint.sh"]
 CMD startup.sh

@@ -23,14 +23,19 @@ function configure() {
     
     echo "Configuring $module"
     for c in `printenv | perl -sne 'print "$1 " if m/^${envPrefix}_(.+?)=.*/' -- -envPrefix=$envPrefix`; do 
-        name=`echo ${c} | perl -pe 's/___/-/g; s/__/_/g; s/_/./g'`
+        name=`echo ${c} | perl -pe 's/___/-/g; s/__/@/g; s/_/./g; s/@/_/g;'`
         var="${envPrefix}_${c}"
         value=${!var}
         echo " - Setting $name=$value"
         
         grep "<name>$name</name>" $path >/dev/null
         if [ $? -eq 0 ]; then
-        　sed -ri '/'"<name>\s*${name}\s*<\/name>"'/{N;s/'"(<name>\s*${name}\s*<\/name>\n*\s*<value>).*?(<\/value>)"'/\1'"${value}"'\2/g}' $path
+          sed -i "s#<property><name>$name</name>.*#<property><name>$name</name><value>${value}</value></property>#g" $path
+          if [ $? -ne 0 ]; then
+          echo "sed error debug---"
+          echo sed -i "s#<property><name>$name</name>.*#<property><name>$name</name><value>${value}</value></property>#g" $path
+          echo "sed error debug---"
+          fi
         else
           addProperty $path $name "$value"
         fi
@@ -43,11 +48,11 @@ configure /etc/hadoop/yarn-site.xml yarn YARN_CONF
 configure /etc/hadoop/httpfs-site.xml httpfs HTTPFS_CONF
 configure /etc/hadoop/kms-site.xml kms KMS_CONF
 configure /etc/hadoop/mapred-site.xml mapred MAPRED_CONF
-configure /opt/hive/conf/hive-site.xml hive HIVE_SITE_CONF
+configure /etc/hadoop/capacity-scheduler.xml capacity CAPACITY_CONF
 
 
-sed -i "s#0.0.0.0:8188#historyserver:8188#g" /etc/hadoop/mapred-site.xml
-sed -i "s#0.0.0.0:10020#historyserver:10020#g" /etc/hadoop/mapred-site.xml
+
+
 
 if [ "$MULTIHOMED_NETWORK" = "1" ]; then
     echo "Configuring for multihomed network"
@@ -119,6 +124,8 @@ function wait_for_it()
     echo "[$i/$max_try] $service:${port} is available."
 }
 
+#hive镜像单独的初始化脚本
+configure /opt/hive/conf/hive-site.xml hive HIVE_SITE_CONF
 
 #根据环境变量选择是否启动Atlas插件
 if [ -n "$ATLAS_HOOK" ]&&[ "$ATLAS_HOOK" = "true" ]&&[ `grep -c "HiveHook" /opt/hive/conf/hive-site.xml` -eq '0' ] ; then
